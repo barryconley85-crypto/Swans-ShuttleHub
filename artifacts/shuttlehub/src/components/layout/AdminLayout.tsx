@@ -15,6 +15,7 @@ import {
   ShieldAlert,
   LogOut,
   User as UserIcon,
+  ChevronLeft,
 } from 'lucide-react';
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -32,9 +33,23 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     });
   };
 
+  // Determine a sensible back destination for sub-pages
+  const backDestination: Record<string, string> = {
+    '/reports': '/dashboard',
+    '/admin': '/dashboard',
+    '/admin/drivers': '/admin',
+    '/admin/vehicles': '/admin',
+    '/admin/duties': '/admin',
+    '/admin/stops': '/admin',
+    '/admin/timetables': '/admin',
+    '/admin/users': '/admin',
+    '/admin/audit-log': '/admin',
+    '/admin/settings': '/admin',
+  };
+  const backPath = backDestination[location];
+
   const navItems = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { label: 'Live Map', path: '/dashboard', icon: Map, exact: true },
     { label: 'Reports', path: '/reports', icon: BarChart3 },
   ];
 
@@ -66,7 +81,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </div>
         <nav className="flex-1 px-3 space-y-1">
           {navItems.map((item) => {
-            const active = item.exact ? location === item.path : location.startsWith(item.path);
+            const active = location.startsWith(item.path);
             return (
               <Link key={item.path} href={item.path} className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${active ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
                 <item.icon className="w-5 h-5" />
@@ -105,13 +120,42 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-[100dvh] overflow-hidden">
         {/* Mobile Header */}
-        <header className="md:hidden h-16 border-b flex items-center justify-between px-4 bg-card shrink-0">
-          <div className="flex items-center gap-2">
-            <Bus className="w-6 h-6 text-primary" />
-            <span className="font-bold">ShuttleHub</span>
-          </div>
-          <Button variant="ghost" size="icon" onClick={handleLogout}>
-            <LogOut className="w-5 h-5" />
+        <header className="md:hidden h-14 border-b flex items-center justify-between px-3 bg-card shrink-0 gap-2">
+          {backPath ? (
+            <Button variant="ghost" size="sm" onClick={() => setLocation(backPath)} className="gap-1 px-2">
+              <ChevronLeft className="w-5 h-5" />
+              Back
+            </Button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Bus className="w-5 h-5 text-primary" />
+              <span className="font-bold text-sm">ShuttleHub</span>
+            </div>
+          )}
+
+          {/* Mobile nav pills for top-level pages */}
+          {!backPath && (
+            <div className="flex items-center gap-1 overflow-x-auto">
+              {navItems.map(item => (
+                <button
+                  key={item.path}
+                  onClick={() => setLocation(item.path)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${location.startsWith(item.path) ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}
+                >
+                  {item.label}
+                </button>
+              ))}
+              <button
+                onClick={() => setLocation('/admin')}
+                className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${location.startsWith('/admin') ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}
+              >
+                Admin
+              </button>
+            </div>
+          )}
+
+          <Button variant="ghost" size="icon" className="shrink-0" onClick={handleLogout}>
+            <LogOut className="w-4 h-4" />
           </Button>
         </header>
         

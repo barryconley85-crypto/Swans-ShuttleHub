@@ -9,6 +9,8 @@ export const timetableEntriesTable = pgTable("timetable_entries", {
   scheduledTime: text("scheduled_time").notNull(), // HH:MM
   sequenceOrder: integer("sequence_order").notNull(),
   direction: text("direction"),
+  runNumber: integer("run_number").notNull().default(1),
+  isBreakAfter: integer("is_break_after").notNull().default(0), // 1 = driver break follows this stop
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
