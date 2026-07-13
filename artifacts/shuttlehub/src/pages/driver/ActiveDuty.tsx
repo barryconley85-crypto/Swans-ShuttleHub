@@ -143,6 +143,30 @@ export default function ActiveDuty() {
     }
   };
 
+  const timetablesLoaded = timetables !== undefined;
+  const noStops = timetablesLoaded && sortedTimetables.length === 0;
+
+  if (!timetablesLoaded) {
+    return (
+      <div className="min-h-[100dvh] flex items-center justify-center bg-background">
+        <Loader2 className="w-12 h-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (noStops) {
+    return (
+      <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background gap-6 p-8 text-center">
+        <MapPin className="w-16 h-16 text-muted-foreground" />
+        <div>
+          <h2 className="text-2xl font-bold mb-2">No stops scheduled</h2>
+          <p className="text-muted-foreground">This duty has no timetable entries set up yet. Contact your administrator.</p>
+        </div>
+        <Button variant="outline" onClick={() => setLocation('/driver')}>Back to Duties</Button>
+      </div>
+    );
+  }
+
   if (!currentEntry) {
     return (
       <div className="min-h-[100dvh] flex items-center justify-center bg-background">
