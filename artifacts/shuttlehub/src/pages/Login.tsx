@@ -58,12 +58,11 @@ export default function Login() {
     const driver = drivers?.find(d => d.id.toString() === driverSelectId);
     if (!driver) return;
     
-    // As per spec: "login with selected name" for driver (assumes driver names are usernames and password can be generic or something, wait the spec says "login with selected name" - we might need to send username as the driver name and some default pass, or the driver select bypasses standard auth? The api takes { username, password }. Let's assume username=driver.name, password='password' or driver.name. The spec says: 'login with selected name (calls listDrivers, then login with selected name)'. Let's try username=driver name, password='password'). 
-    // Actually, I'll prompt for password if we must, but if there's a driver shortcut let's just use it:
-    form.setValue('username', driver.name);
-    // Focus password
-    document.getElementById('password-input')?.focus();
-    toast.info(`Enter password for ${driver.name}`);
+    // Derive username: "John Smith" → "john.smith"
+    const username = driver.name.toLowerCase().replace(/\s+/g, '.');
+    form.setValue('username', username);
+    form.setValue('password', 'driver123');
+    form.handleSubmit(onSubmit)();
   };
 
   return (
