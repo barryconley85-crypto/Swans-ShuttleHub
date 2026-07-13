@@ -1,0 +1,14 @@
+{
+  "name": "Swans ShuttleHub",
+  "short_name": "ShuttleHub",
+  "theme_color": "#0f2356",
+  "background_color": "#0f2356",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/bus-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

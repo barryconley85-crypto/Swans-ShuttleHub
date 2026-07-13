@@ -3,20 +3,46 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Swans ShuttleHub API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: drivers
+    description: Driver management
+  - name: vehicles
+    description: Vehicle management
+  - name: duties
+    description: Duty management
+  - name: stops
+    description: Stop and geofence management
+  - name: timetables
+    description: Timetable management
+  - name: passengerRecords
+    description: Passenger count submissions
+  - name: gpsTracking
+    description: GPS position tracking
+  - name: reports
+    description: Reporting and analytics
+  - name: users
+    description: User and role management
+  - name: auditLog
+    description: Audit trail
+  - name: settings
+    description: Application settings
+  - name: dashboard
+    description: Live operations dashboard
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +50,1044 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # --- AUTH ---
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with username and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSession"
+        "401":
+          description: Unauthorized
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout current session
+      responses:
+        "200":
+          description: Logged out
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current session user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSession"
+        "401":
+          description: Not authenticated
+
+  # --- DRIVERS ---
+  /drivers:
+    get:
+      operationId: listDrivers
+      tags: [drivers]
+      summary: List all drivers
+      responses:
+        "200":
+          description: List of drivers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Driver"
+    post:
+      operationId: createDriver
+      tags: [drivers]
+      summary: Create a driver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriverInput"
+      responses:
+        "201":
+          description: Created driver
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Driver"
+
+  /drivers/{id}:
+    get:
+      operationId: getDriver
+      tags: [drivers]
+      summary: Get a driver by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Driver
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Driver"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateDriver
+      tags: [drivers]
+      summary: Update a driver
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriverUpdate"
+      responses:
+        "200":
+          description: Updated driver
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Driver"
+    delete:
+      operationId: deleteDriver
+      tags: [drivers]
+      summary: Delete a driver
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+
+  # --- VEHICLES ---
+  /vehicles:
+    get:
+      operationId: listVehicles
+      tags: [vehicles]
+      summary: List all vehicles
+      responses:
+        "200":
+          description: List of vehicles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Vehicle"
+    post:
+      operationId: createVehicle
+      tags: [vehicles]
+      summary: Create a vehicle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleInput"
+      responses:
+        "201":
+          description: Created vehicle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+
+  /vehicles/{id}:
+    get:
+      operationId: getVehicle
+      tags: [vehicles]
+      summary: Get a vehicle by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Vehicle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+    patch:
+      operationId: updateVehicle
+      tags: [vehicles]
+      summary: Update a vehicle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleUpdate"
+      responses:
+        "200":
+          description: Updated vehicle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+    delete:
+      operationId: deleteVehicle
+      tags: [vehicles]
+      summary: Delete a vehicle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+
+  # --- DUTIES ---
+  /duties:
+    get:
+      operationId: listDuties
+      tags: [duties]
+      summary: List all duties
+      responses:
+        "200":
+          description: List of duties
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Duty"
+    post:
+      operationId: createDuty
+      tags: [duties]
+      summary: Create a duty
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DutyInput"
+      responses:
+        "201":
+          description: Created duty
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Duty"
+
+  /duties/{id}:
+    get:
+      operationId: getDuty
+      tags: [duties]
+      summary: Get a duty by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Duty
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Duty"
+    patch:
+      operationId: updateDuty
+      tags: [duties]
+      summary: Update a duty
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DutyUpdate"
+      responses:
+        "200":
+          description: Updated duty
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Duty"
+    delete:
+      operationId: deleteDuty
+      tags: [duties]
+      summary: Delete a duty
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+
+  # --- STOPS ---
+  /stops:
+    get:
+      operationId: listStops
+      tags: [stops]
+      summary: List all stops
+      responses:
+        "200":
+          description: List of stops
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Stop"
+    post:
+      operationId: createStop
+      tags: [stops]
+      summary: Create a stop
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StopInput"
+      responses:
+        "201":
+          description: Created stop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stop"
+
+  /stops/{id}:
+    get:
+      operationId: getStop
+      tags: [stops]
+      summary: Get a stop by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Stop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stop"
+    patch:
+      operationId: updateStop
+      tags: [stops]
+      summary: Update a stop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StopUpdate"
+      responses:
+        "200":
+          description: Updated stop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stop"
+    delete:
+      operationId: deleteStop
+      tags: [stops]
+      summary: Delete a stop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+
+  # --- TIMETABLES ---
+  /timetables:
+    get:
+      operationId: listTimetables
+      tags: [timetables]
+      summary: List timetable entries, optionally filtered by duty
+      parameters:
+        - name: dutyId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of timetable entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimetableEntry"
+    post:
+      operationId: createTimetableEntry
+      tags: [timetables]
+      summary: Create a timetable entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TimetableEntryInput"
+      responses:
+        "201":
+          description: Created timetable entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimetableEntry"
+
+  /timetables/{id}:
+    get:
+      operationId: getTimetableEntry
+      tags: [timetables]
+      summary: Get a timetable entry by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Timetable entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimetableEntry"
+    patch:
+      operationId: updateTimetableEntry
+      tags: [timetables]
+      summary: Update a timetable entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TimetableEntryUpdate"
+      responses:
+        "200":
+          description: Updated timetable entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimetableEntry"
+    delete:
+      operationId: deleteTimetableEntry
+      tags: [timetables]
+      summary: Delete a timetable entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+
+  # --- PASSENGER RECORDS ---
+  /passenger-records:
+    get:
+      operationId: listPassengerRecords
+      tags: [passengerRecords]
+      summary: List passenger records with optional filters
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+        - name: dutyId
+          in: query
+          schema:
+            type: integer
+        - name: driverId
+          in: query
+          schema:
+            type: integer
+        - name: stopId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of passenger records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PassengerRecord"
+    post:
+      operationId: createPassengerRecord
+      tags: [passengerRecords]
+      summary: Submit a passenger count
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PassengerRecordInput"
+      responses:
+        "201":
+          description: Created record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PassengerRecord"
+        "409":
+          description: Already submitted for this departure
+
+  /passenger-records/{id}:
+    get:
+      operationId: getPassengerRecord
+      tags: [passengerRecords]
+      summary: Get a passenger record by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Passenger record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PassengerRecord"
+
+  /passenger-records/sync:
+    post:
+      operationId: syncOfflinePassengerRecords
+      tags: [passengerRecords]
+      summary: Batch sync offline passenger records
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SyncInput"
+      responses:
+        "200":
+          description: Sync result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncResult"
+
+  # --- GPS TRACKING ---
+  /gps:
+    post:
+      operationId: recordGpsPosition
+      tags: [gpsTracking]
+      summary: Record a GPS position update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GpsPositionInput"
+      responses:
+        "201":
+          description: Recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GpsPosition"
+
+  /gps/latest:
+    get:
+      operationId: listLatestGpsPositions
+      tags: [gpsTracking]
+      summary: Get the latest GPS position for each active duty today
+      responses:
+        "200":
+          description: Latest positions per duty
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GpsPosition"
+
+  /gps/sync:
+    post:
+      operationId: syncOfflineGpsPositions
+      tags: [gpsTracking]
+      summary: Batch sync offline GPS positions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GpsSyncInput"
+      responses:
+        "200":
+          description: Synced
+
+  # --- DASHBOARD ---
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get live operations dashboard summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/duty-status:
+    get:
+      operationId: listDutyStatuses
+      tags: [dashboard]
+      summary: Get current status for each active duty today
+      responses:
+        "200":
+          description: Duty statuses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DutyStatus"
+
+  # --- REPORTS ---
+  /reports/daily:
+    get:
+      operationId: getDailyReport
+      tags: [reports]
+      summary: Daily passenger totals
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Daily report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailyReport"
+
+  /reports/weekly:
+    get:
+      operationId: getWeeklyReport
+      tags: [reports]
+      summary: Weekly passenger totals
+      parameters:
+        - name: weekStart
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Weekly report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeeklyReport"
+
+  /reports/monthly:
+    get:
+      operationId: getMonthlyReport
+      tags: [reports]
+      summary: Monthly passenger totals
+      parameters:
+        - name: year
+          in: query
+          schema:
+            type: integer
+        - name: month
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Monthly report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyReport"
+
+  /reports/by-duty:
+    get:
+      operationId: getReportByDuty
+      tags: [reports]
+      summary: Passenger totals grouped by duty
+      parameters:
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Duty breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DutyBreakdown"
+
+  /reports/by-stop:
+    get:
+      operationId: getReportByStop
+      tags: [reports]
+      summary: Passenger totals grouped by stop
+      parameters:
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Stop breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StopBreakdown"
+
+  /reports/by-hour:
+    get:
+      operationId: getReportByHour
+      tags: [reports]
+      summary: Passenger counts grouped by hour
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Hourly breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HourlyBreakdown"
+
+  /reports/missing-submissions:
+    get:
+      operationId: getMissingSubmissions
+      tags: [reports]
+      summary: List departures with missing passenger count submissions
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Missing submissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MissingSubmission"
+
+  /reports/late-submissions:
+    get:
+      operationId: getLateSubmissions
+      tags: [reports]
+      summary: List late passenger count submissions
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Late submissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LateSubmission"
+
+  /reports/export:
+    get:
+      operationId: exportReport
+      tags: [reports]
+      summary: Export passenger records as CSV
+      parameters:
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [csv]
+      responses:
+        "200":
+          description: CSV file
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  # --- USERS ---
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List all users
+      responses:
+        "200":
+          description: Users list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      operationId: createUser
+      tags: [users]
+      summary: Create a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+      responses:
+        "201":
+          description: Created user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get a user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    patch:
+      operationId: updateUser
+      tags: [users]
+      summary: Update a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    delete:
+      operationId: deleteUser
+      tags: [users]
+      summary: Delete a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+
+  /users/{id}/reset-password:
+    post:
+      operationId: resetUserPassword
+      tags: [users]
+      summary: Reset a user password
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordInput"
+      responses:
+        "200":
+          description: Password reset
+
+  # --- AUDIT LOG ---
+  /audit-log:
+    get:
+      operationId: listAuditLog
+      tags: [auditLog]
+      summary: List audit log entries
+      parameters:
+        - name: userId
+          in: query
+          schema:
+            type: integer
+        - name: action
+          in: query
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Audit log entries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditLogPage"
+
+  # --- SETTINGS ---
+  /settings:
+    get:
+      operationId: listSettings
+      tags: [settings]
+      summary: Get all settings
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Setting"
+    put:
+      operationId: upsertSetting
+      tags: [settings]
+      summary: Create or update a setting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingInput"
+      responses:
+        "200":
+          description: Updated setting
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Setting"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +1098,751 @@ components:
       required:
         - status
 
+    # --- AUTH ---
+    LoginInput:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    AuthSession:
+      type: object
+      required: [id, username, role]
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        role:
+          type: string
+          enum: [admin, driver]
+        driverId:
+          type: ["integer", "null"]
+        driverName:
+          type: ["string", "null"]
+
+    # --- DRIVER ---
+    Driver:
+      type: object
+      required: [id, name, isActive, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        employeeNumber:
+          type: ["string", "null"]
+        phoneNumber:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        vehicleId:
+          type: ["integer", "null"]
+        vehicleRegistration:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    DriverInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        employeeNumber:
+          type: string
+        phoneNumber:
+          type: string
+        vehicleId:
+          type: integer
+
+    DriverUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        employeeNumber:
+          type: string
+        phoneNumber:
+          type: string
+        vehicleId:
+          type: integer
+        isActive:
+          type: boolean
+
+    # --- VEHICLE ---
+    Vehicle:
+      type: object
+      required: [id, registration, isActive, createdAt]
+      properties:
+        id:
+          type: integer
+        registration:
+          type: string
+        make:
+          type: ["string", "null"]
+        model:
+          type: ["string", "null"]
+        capacity:
+          type: ["integer", "null"]
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+
+    VehicleInput:
+      type: object
+      required: [registration]
+      properties:
+        registration:
+          type: string
+        make:
+          type: string
+        model:
+          type: string
+        capacity:
+          type: integer
+
+    VehicleUpdate:
+      type: object
+      properties:
+        registration:
+          type: string
+        make:
+          type: string
+        model:
+          type: string
+        capacity:
+          type: integer
+        isActive:
+          type: boolean
+
+    # --- DUTY ---
+    Duty:
+      type: object
+      required: [id, name, number, isActive, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        number:
+          type: integer
+        description:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+
+    DutyInput:
+      type: object
+      required: [name, number]
+      properties:
+        name:
+          type: string
+        number:
+          type: integer
+        description:
+          type: string
+
+    DutyUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        number:
+          type: integer
+        description:
+          type: string
+        isActive:
+          type: boolean
+
+    # --- STOP ---
+    Stop:
+      type: object
+      required: [id, name, isActive, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        geofenceRadiusMeters:
+          type: integer
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+
+    StopInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        geofenceRadiusMeters:
+          type: integer
+
+    StopUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        geofenceRadiusMeters:
+          type: integer
+        isActive:
+          type: boolean
+
+    # --- TIMETABLE ---
+    TimetableEntry:
+      type: object
+      required: [id, dutyId, stopId, scheduledTime, sequenceOrder, createdAt]
+      properties:
+        id:
+          type: integer
+        dutyId:
+          type: integer
+        dutyName:
+          type: ["string", "null"]
+        stopId:
+          type: integer
+        stopName:
+          type: ["string", "null"]
+        scheduledTime:
+          type: string
+          description: "HH:MM format"
+        sequenceOrder:
+          type: integer
+        direction:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    TimetableEntryInput:
+      type: object
+      required: [dutyId, stopId, scheduledTime, sequenceOrder]
+      properties:
+        dutyId:
+          type: integer
+        stopId:
+          type: integer
+        scheduledTime:
+          type: string
+        sequenceOrder:
+          type: integer
+        direction:
+          type: string
+
+    TimetableEntryUpdate:
+      type: object
+      properties:
+        scheduledTime:
+          type: string
+        sequenceOrder:
+          type: integer
+        direction:
+          type: string
+
+    # --- PASSENGER RECORD ---
+    PassengerRecord:
+      type: object
+      required: [id, date, driverId, dutyId, stopId, timetableEntryId, scheduledTime, actualSubmissionTime, passengerCount, createdAt]
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        driverId:
+          type: integer
+        driverName:
+          type: ["string", "null"]
+        dutyId:
+          type: integer
+        dutyName:
+          type: ["string", "null"]
+        stopId:
+          type: integer
+        stopName:
+          type: ["string", "null"]
+        timetableEntryId:
+          type: integer
+        scheduledTime:
+          type: string
+        actualSubmissionTime:
+          type: string
+        passengerCount:
+          type: integer
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        isLate:
+          type: boolean
+        minutesLate:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+
+    PassengerRecordInput:
+      type: object
+      required: [driverId, dutyId, stopId, timetableEntryId, passengerCount]
+      properties:
+        driverId:
+          type: integer
+        dutyId:
+          type: integer
+        stopId:
+          type: integer
+        timetableEntryId:
+          type: integer
+        passengerCount:
+          type: integer
+        latitude:
+          type: number
+        longitude:
+          type: number
+
+    SyncInput:
+      type: object
+      required: [records]
+      properties:
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/PassengerRecordInput"
+
+    SyncResult:
+      type: object
+      required: [synced, skipped]
+      properties:
+        synced:
+          type: integer
+        skipped:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: string
+
+    # --- GPS ---
+    GpsPosition:
+      type: object
+      required: [id, driverId, dutyId, latitude, longitude, recordedAt]
+      properties:
+        id:
+          type: integer
+        driverId:
+          type: integer
+        driverName:
+          type: ["string", "null"]
+        dutyId:
+          type: integer
+        dutyName:
+          type: ["string", "null"]
+        latitude:
+          type: number
+        longitude:
+          type: number
+        speed:
+          type: ["number", "null"]
+        heading:
+          type: ["number", "null"]
+        currentStopName:
+          type: ["string", "null"]
+        recordedAt:
+          type: string
+
+    GpsPositionInput:
+      type: object
+      required: [driverId, dutyId, latitude, longitude]
+      properties:
+        driverId:
+          type: integer
+        dutyId:
+          type: integer
+        latitude:
+          type: number
+        longitude:
+          type: number
+        speed:
+          type: number
+        heading:
+          type: number
+
+    GpsSyncInput:
+      type: object
+      required: [positions]
+      properties:
+        positions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GpsPositionInput"
+
+    # --- DASHBOARD ---
+    DashboardSummary:
+      type: object
+      required: [todayPassengerTotal, activeDuties, completedDepartures, missingCount, lateCount, totalDepartures]
+      properties:
+        todayPassengerTotal:
+          type: integer
+        activeDuties:
+          type: integer
+        completedDepartures:
+          type: integer
+        totalDepartures:
+          type: integer
+        missingCount:
+          type: integer
+        lateCount:
+          type: integer
+
+    DutyStatus:
+      type: object
+      required: [dutyId, dutyName, status]
+      properties:
+        dutyId:
+          type: integer
+        dutyName:
+          type: string
+        driverId:
+          type: ["integer", "null"]
+        driverName:
+          type: ["string", "null"]
+        vehicleRegistration:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [normal, late, missing, offline]
+        currentStopName:
+          type: ["string", "null"]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        speed:
+          type: ["number", "null"]
+        heading:
+          type: ["number", "null"]
+        lastGpsUpdate:
+          type: ["string", "null"]
+        lastPassengerCount:
+          type: ["integer", "null"]
+        todayPassengerTotal:
+          type: integer
+        completedDepartures:
+          type: integer
+        totalDepartures:
+          type: integer
+
+    # --- REPORTS ---
+    DailyReport:
+      type: object
+      required: [date, totalPassengers, totalDepartures, completedDepartures, missingDepartures, lateDepartures, byDuty, byStop, byHour]
+      properties:
+        date:
+          type: string
+        totalPassengers:
+          type: integer
+        totalDepartures:
+          type: integer
+        completedDepartures:
+          type: integer
+        missingDepartures:
+          type: integer
+        lateDepartures:
+          type: integer
+        busiestDeparture:
+          type: ["string", "null"]
+        quietestDeparture:
+          type: ["string", "null"]
+        averagePassengers:
+          type: number
+        byDuty:
+          type: array
+          items:
+            $ref: "#/components/schemas/DutyBreakdown"
+        byStop:
+          type: array
+          items:
+            $ref: "#/components/schemas/StopBreakdown"
+        byHour:
+          type: array
+          items:
+            $ref: "#/components/schemas/HourlyBreakdown"
+
+    WeeklyReport:
+      type: object
+      required: [weekStart, weekEnd, totalPassengers, days]
+      properties:
+        weekStart:
+          type: string
+        weekEnd:
+          type: string
+        totalPassengers:
+          type: integer
+        averageDaily:
+          type: number
+        days:
+          type: array
+          items:
+            type: object
+            required: [date, totalPassengers]
+            properties:
+              date:
+                type: string
+              totalPassengers:
+                type: integer
+
+    MonthlyReport:
+      type: object
+      required: [year, month, totalPassengers, weeks]
+      properties:
+        year:
+          type: integer
+        month:
+          type: integer
+        totalPassengers:
+          type: integer
+        averageDaily:
+          type: number
+        weeks:
+          type: array
+          items:
+            type: object
+            required: [weekStart, totalPassengers]
+            properties:
+              weekStart:
+                type: string
+              totalPassengers:
+                type: integer
+
+    DutyBreakdown:
+      type: object
+      required: [dutyId, dutyName, totalPassengers, completedDepartures, totalDepartures]
+      properties:
+        dutyId:
+          type: integer
+        dutyName:
+          type: string
+        totalPassengers:
+          type: integer
+        completedDepartures:
+          type: integer
+        totalDepartures:
+          type: integer
+        averagePassengers:
+          type: number
+
+    StopBreakdown:
+      type: object
+      required: [stopId, stopName, totalPassengers, totalDepartures]
+      properties:
+        stopId:
+          type: integer
+        stopName:
+          type: string
+        totalPassengers:
+          type: integer
+        totalDepartures:
+          type: integer
+        averagePassengers:
+          type: number
+
+    HourlyBreakdown:
+      type: object
+      required: [hour, totalPassengers, departures]
+      properties:
+        hour:
+          type: integer
+        totalPassengers:
+          type: integer
+        departures:
+          type: integer
+
+    MissingSubmission:
+      type: object
+      required: [timetableEntryId, dutyId, dutyName, stopId, stopName, scheduledTime, date]
+      properties:
+        timetableEntryId:
+          type: integer
+        dutyId:
+          type: integer
+        dutyName:
+          type: string
+        stopId:
+          type: integer
+        stopName:
+          type: string
+        scheduledTime:
+          type: string
+        date:
+          type: string
+        driverId:
+          type: ["integer", "null"]
+        driverName:
+          type: ["string", "null"]
+
+    LateSubmission:
+      type: object
+      required: [id, dutyId, dutyName, stopId, stopName, scheduledTime, actualSubmissionTime, minutesLate, passengerCount, date]
+      properties:
+        id:
+          type: integer
+        dutyId:
+          type: integer
+        dutyName:
+          type: string
+        stopId:
+          type: integer
+        stopName:
+          type: string
+        scheduledTime:
+          type: string
+        actualSubmissionTime:
+          type: string
+        minutesLate:
+          type: integer
+        passengerCount:
+          type: integer
+        date:
+          type: string
+        driverName:
+          type: ["string", "null"]
+
+    # --- USERS ---
+    User:
+      type: object
+      required: [id, username, role, isActive, createdAt]
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        role:
+          type: string
+          enum: [admin, driver]
+        driverId:
+          type: ["integer", "null"]
+        driverName:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+        lastLoginAt:
+          type: ["string", "null"]
+
+    UserInput:
+      type: object
+      required: [username, password, role]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum: [admin, driver]
+        driverId:
+          type: integer
+
+    UserUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        role:
+          type: string
+          enum: [admin, driver]
+        driverId:
+          type: integer
+        isActive:
+          type: boolean
+
+    ResetPasswordInput:
+      type: object
+      required: [newPassword]
+      properties:
+        newPassword:
+          type: string
+
+    # --- AUDIT LOG ---
+    AuditLogEntry:
+      type: object
+      required: [id, action, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: ["integer", "null"]
+        username:
+          type: ["string", "null"]
+        action:
+          type: string
+        tableName:
+          type: ["string", "null"]
+        recordId:
+          type: ["integer", "null"]
+        oldValue:
+          type: ["string", "null"]
+        newValue:
+          type: ["string", "null"]
+        ipAddress:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    AuditLogPage:
+      type: object
+      required: [entries, total, limit, offset]
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditLogEntry"
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    # --- SETTINGS ---
+    Setting:
+      type: object
+      required: [key, value, updatedAt]
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+        description:
+          type: ["string", "null"]
+        updatedAt:
+          type: string
+
+    SettingInput:
+      type: object
+      required: [key, value]
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+        description:
+          type: string

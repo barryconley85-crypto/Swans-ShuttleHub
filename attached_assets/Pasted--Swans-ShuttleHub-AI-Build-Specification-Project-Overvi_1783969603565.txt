@@ -1,0 +1,449 @@
+# Swans ShuttleHub - AI Build Specification
+
+## Project Overview
+
+Build a production-quality Progressive Web App (PWA) called **Swans ShuttleHub** for Swans Travel.
+
+The application is for recording passenger loading figures on an internal staff shuttle service and providing a live operational dashboard for the traffic office.
+
+The application must work perfectly on iPhone, Android, tablets and desktop browsers.
+
+It must be installable as a Progressive Web App (PWA) and have a modern, fast, mobile-first design.
+
+The entire application should be built with scalability in mind so future operational modules can be added.
+
+---
+
+## Technology Stack
+
+Use:
+
+- React
+- TypeScript
+- Tailwind CSS
+- Supabase (Authentication + Database + Realtime)
+- React Router
+- Google Maps (or Mapbox if preferred)
+- Vercel compatible deployment
+- PWA support
+- Responsive design
+
+Use clean, reusable components and production-ready code.
+
+---
+
+# DRIVER APPLICATION
+
+## Login
+
+Drivers log in by selecting their name from a dropdown.
+
+Driver names are managed from the Admin Portal.
+
+Once logged in, keep the driver signed in until logout.
+
+Automatically record the driver's name against every submission.
+
+---
+
+## Duty Selection
+
+Display eight large touch-friendly cards.
+
+Duty 1
+
+Duty 2
+
+Duty 3
+
+Duty 4
+
+Duty 5
+
+Duty 6
+
+Duty 7
+
+Duty 8
+
+Selecting a duty loads only that duty's timetable.
+
+---
+
+## GPS Tracking
+
+When the duty starts:
+
+Request permission to use the phone's GPS.
+
+If permission is granted:
+
+Begin recording GPS position every 30 seconds.
+
+Capture:
+
+• Latitude
+• Longitude
+• Timestamp
+• Driver
+• Duty
+• Speed (if available)
+• Heading (if available)
+
+If offline, store updates locally and automatically upload them once internet returns.
+
+---
+
+## Geofencing
+
+Create configurable geofences around shuttle stops.
+
+Example stops:
+
+Royal Well Bus Station
+
+Benhall
+
+Arle Court
+
+When the phone enters a stop geofence:
+
+Automatically display the scheduled departure for that stop.
+
+The driver should never need to manually select a departure if GPS determines the correct stop.
+
+---
+
+## Passenger Recording
+
+The only information the driver enters is:
+
+Passenger Count
+
+Use large + and - buttons with a numeric display.
+
+Example:
+
+Passenger Count
+
+[-] 12 [+]
+
+Large Submit button
+
+When submitted automatically record:
+
+Date
+
+Driver
+
+Duty
+
+Scheduled Departure Time
+
+Actual Submission Time
+
+Stop Name
+
+Latitude
+
+Longitude
+
+Passenger Count
+
+Unique Record ID
+
+After saving automatically move to the next scheduled departure.
+
+Each departure may only be submitted once.
+
+If already submitted display:
+
+"This departure has already been recorded."
+
+---
+
+## Offline Support
+
+If internet is unavailable:
+
+Store all submissions locally.
+
+Automatically upload when internet connection returns.
+
+No records should ever be lost.
+
+---
+
+# LIVE OPERATIONS DASHBOARD
+
+Create a responsive Admin Dashboard.
+
+Dashboard includes:
+
+Live Map
+
+Today's Active Duties
+
+Current Driver
+
+Current GPS Position
+
+Current Stop
+
+Last GPS Update
+
+Passenger Count Status
+
+Late Passenger Counts
+
+Missing Passenger Counts
+
+Completed Departures
+
+Today's Passenger Total
+
+Vehicle Status
+
+Use live updates from Supabase Realtime.
+
+Vehicle markers should update automatically.
+
+Colour code markers:
+
+Green = Operating Normally
+
+Amber = Late
+
+Red = Missing Passenger Count
+
+Grey = Offline
+
+---
+
+## Clicking a Vehicle
+
+Show:
+
+Driver
+
+Duty
+
+Vehicle
+
+Current Stop
+
+Current Speed
+
+Heading
+
+Last Update Time
+
+Last Passenger Count
+
+Today's Passenger Total
+
+Current GPS Coordinates
+
+---
+
+# REPORTING
+
+Create reporting pages showing:
+
+Daily Passenger Totals
+
+Weekly Passenger Totals
+
+Monthly Passenger Totals
+
+Passengers by Duty
+
+Passengers by Stop
+
+Passengers by Hour
+
+Average Loadings
+
+Busiest Departure
+
+Quietest Departure
+
+Late Submission Report
+
+Missing Submission Report
+
+Charts
+
+Graphs
+
+Search
+
+Filters
+
+CSV Export
+
+Excel Export
+
+---
+
+# ADMIN PORTAL
+
+Administrator login.
+
+Allow administrators to:
+
+Manage Drivers
+
+Manage Duties
+
+Manage Timetables
+
+Manage Stops
+
+Manage Geofence Radius
+
+View Reports
+
+Reset Passwords
+
+Manage Users
+
+Manage Vehicles
+
+---
+
+# DATABASE
+
+Create proper relational database tables for:
+
+Drivers
+
+Vehicles
+
+Duties
+
+Timetables
+
+Stops
+
+Passenger Records
+
+GPS Tracking
+
+Users
+
+Roles
+
+Settings
+
+Audit Log
+
+---
+
+# AUDIT LOG
+
+Record every important action.
+
+Include:
+
+User
+
+Action
+
+Date
+
+Time
+
+IP Address
+
+Old Value
+
+New Value
+
+Nothing should be deleted without an audit trail.
+
+---
+
+# SECURITY
+
+Authenticated users only.
+
+Role-based permissions.
+
+Drivers can only submit passenger data.
+
+Administrators have full access.
+
+Use Supabase Authentication.
+
+---
+
+# USER EXPERIENCE
+
+Modern clean interface.
+
+Dark mode.
+
+Large touch-friendly buttons.
+
+Minimal typing.
+
+One-handed operation.
+
+Fast loading.
+
+Professional transport industry styling using navy blue, white and light blue.
+
+---
+
+# FUTURE MODULES
+
+The architecture must support future additions including:
+
+Daily Vehicle Checks
+
+Vehicle Defect Reporting
+
+Driver Messaging
+
+Incident Reporting
+
+Lost Property
+
+Push Notifications
+
+Driver Documents
+
+Training Records
+
+QR Code Scanning
+
+Driver Hours
+
+Route Changes
+
+News Feed
+
+Document Acknowledgements
+
+These modules should be easy to add without redesigning the application.
+
+---
+
+# DEPLOYMENT
+
+The finished project must:
+
+Be fully compatible with Vercel.
+
+Run as a Progressive Web App.
+
+Work on iPhone, Android and desktop browsers.
+
+Use responsive layouts.
+
+Include clear setup instructions.
+
+Produce clean, maintainable, production-ready code.
+
+The application should feel like a commercial transport operations platform rather than a simple passenger counting form.
