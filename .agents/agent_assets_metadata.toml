@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "lbMAL5WMUBsXxAACWXlgy"
+uri = "file://swans-shuttlehub.zip"
+type = "unspecified"
+title = "Swans ShuttleHub — Full Source Code"
