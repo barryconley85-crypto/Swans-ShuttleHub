@@ -6,7 +6,7 @@ import { requireAuth } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/drivers", requireAuth, async (req, res): Promise<void> => {
+router.get("/drivers", async (req, res): Promise<void> => {
   const rows = await db
     .select({
       id: driversTable.id,
