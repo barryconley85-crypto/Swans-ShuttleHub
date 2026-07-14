@@ -13,15 +13,13 @@ import {
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line
 } from 'recharts';
-import { customFetch } from '@workspace/api-client-react';
-
 // Inline hook for duty loadings (not yet in generated client)
 function useDutyLoadings(date: string) {
   const [data, setData] = React.useState<any>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   React.useEffect(() => {
     setIsLoading(true);
-    customFetch(`/api/reports/duty-loadings?date=${date}`)
+    fetch(`/api/reports/duty-loadings?date=${date}`, { credentials: 'include' })
       .then(r => r.json())
       .then(d => { setData(d); setIsLoading(false); })
       .catch(() => setIsLoading(false));
