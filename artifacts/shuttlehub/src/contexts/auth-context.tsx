@@ -10,10 +10,10 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({ user: undefined, isLoading: true, refresh: () => {} });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { data: user, isLoading, refetch } = useGetMe({ query: { retry: false } });
+  const { data: user, isLoading, isFetching, refetch } = useGetMe({ query: { retry: false } });
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, refresh: () => refetch() }}>
+    <AuthContext.Provider value={{ user, isLoading: isLoading || isFetching, refresh: () => refetch() }}>
       {children}
     </AuthContext.Provider>
   );
