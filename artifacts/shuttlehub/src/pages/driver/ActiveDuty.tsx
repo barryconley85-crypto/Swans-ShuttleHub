@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useRoute, useLocation } from 'wouter';
 import {
   useGetDuty,
+  getGetDutyQueryKey,
   useListTimetables,
+  getListTimetablesQueryKey,
   useListStops,
   useCreatePassengerRecord,
-  useListPassengerRecords
+  useListPassengerRecords,
+  getListPassengerRecordsQueryKey
 } from '@workspace/api-client-react';
 import { useAuth } from '@/contexts/auth-context';
 import { useGps } from '@/contexts/gps-context';
@@ -33,13 +36,14 @@ export default function ActiveDuty() {
   const { startTracking, stopTracking, lastPosition } = useGps();
   const { isOnline, queuePassengerRecord } = useOffline();
 
-  const { data: duty } = useGetDuty(dutyId, { query: { enabled: !!dutyId } });
-  const { data: timetables } = useListTimetables({ dutyId }, { query: { enabled: !!dutyId } });
+  const { data: duty } = useGetDuty(dutyId, { query: { queryKey: getGetDutyQueryKey(dutyId), enabled: !!dutyId } });
+  const { data: timetables } = useListTimetables({ dutyId }, { query: { queryKey: getListTimetablesQueryKey({ dutyId }), enabled: !!dutyId } });
   const { data: stops } = useListStops();
   const today = new Date().toISOString().split('T')[0];
+  const passengerRecordsParams = { dutyId, date: today, driverId: user?.driverId ?? undefined };
   const { data: existingRecords, refetch: refetchRecords } = useListPassengerRecords(
-    { dutyId, date: today, driverId: user?.driverId ?? undefined },
-    { query: { enabled: !!dutyId } }
+    passengerRecordsParams,
+    { query: { queryKey: getListPassengerRecordsQueryKey(passengerRecordsParams), enabled: !!dutyId } }
   );
 
   const createRecord = useCreatePassengerRecord();

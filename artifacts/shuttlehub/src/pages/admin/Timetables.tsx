@@ -4,6 +4,7 @@ import {
   useListDuties, 
   useListStops, 
   useListTimetables,
+  getListTimetablesQueryKey,
   useCreateTimetableEntry,
   useUpdateTimetableEntry,
   useDeleteTimetableEntry 
@@ -22,7 +23,7 @@ export default function Timetables() {
   const { data: stops } = useListStops();
   const dutyId = selectedDutyId ? parseInt(selectedDutyId) : undefined;
   
-  const { data: timetables, refetch } = useListTimetables({ dutyId }, { query: { enabled: !!dutyId } });
+  const { data: timetables, refetch } = useListTimetables({ dutyId }, { query: { queryKey: getListTimetablesQueryKey({ dutyId }), enabled: !!dutyId } });
   
   const create = useCreateTimetableEntry();
   const remove = useDeleteTimetableEntry();

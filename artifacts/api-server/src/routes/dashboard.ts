@@ -26,10 +26,10 @@ async function getNearestStop(lat: number, lon: number): Promise<string | null> 
 router.get("/dashboard/summary", requireAuth, async (req, res): Promise<void> => {
   const today = new Date().toISOString().slice(0, 10);
 
-  const [totalRow] = await db.execute(sql`
+  const totalResult = await db.execute(sql`
     SELECT COALESCE(SUM(passenger_count), 0) as total FROM passenger_records WHERE date = ${today}
   `);
-  const todayPassengerTotal = parseInt(String((totalRow?.rows as any[])?.[0]?.total ?? 0), 10);
+  const todayPassengerTotal = parseInt(String(totalResult.rows[0]?.total ?? 0), 10);
 
   const duties = await db.select().from(dutiesTable).where(eq(dutiesTable.isActive, true));
   const activeDuties = duties.length;

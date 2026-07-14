@@ -87,7 +87,6 @@ async function seed() {
   }
 
   // Default settings
-  await db.insert(stopsTable).values([]).onConflictDoNothing();
 
   console.log("Seed complete!");
   console.log("Admin login: admin / admin123");

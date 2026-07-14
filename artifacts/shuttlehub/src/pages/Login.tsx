@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Bus, Lock, User as UserIcon } from 'lucide-react';
-import { useLogin, useListDrivers, AuthSession } from '@workspace/api-client-react';
+import { useLogin, useListDrivers, getListDriversQueryKey, AuthSession } from '@workspace/api-client-react';
 import { useAuth } from '@/contexts/auth-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -22,7 +22,7 @@ export default function Login() {
   const [, setLocation] = useLocation();
   const { refresh } = useAuth();
   const loginMutation = useLogin();
-  const { data: drivers } = useListDrivers({ query: { retry: false } });
+  const { data: drivers } = useListDrivers({ query: { queryKey: getListDriversQueryKey(), retry: false } });
   
   const [driverSelectId, setDriverSelectId] = useState<string>('');
   

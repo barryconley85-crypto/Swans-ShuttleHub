@@ -1,13 +1,13 @@
 import React from 'react';
 import { AdminLayout } from '@/components/layout/AdminLayout';
-import { useGetDashboardSummary, useListDutyStatuses } from '@workspace/api-client-react';
+import { useGetDashboardSummary, getGetDashboardSummaryQueryKey, useListDutyStatuses, getListDutyStatusesQueryKey } from '@workspace/api-client-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Bus, CheckCircle2, AlertTriangle, AlertCircle } from 'lucide-react';
 import MapComponent from '@/components/MapComponent';
 
 export default function Dashboard() {
-  const { data: summary } = useGetDashboardSummary({ query: { refetchInterval: 15000 } });
-  const { data: statuses } = useListDutyStatuses({ query: { refetchInterval: 15000 } });
+  const { data: summary } = useGetDashboardSummary({ query: { queryKey: getGetDashboardSummaryQueryKey(), refetchInterval: 15000 } });
+  const { data: statuses } = useListDutyStatuses({ query: { queryKey: getListDutyStatusesQueryKey(), refetchInterval: 15000 } });
 
   return (
     <AdminLayout>

@@ -1,0 +1,2 @@
+- [Orval + React Query v5 queryKey typing](orval-queryquery-key-typing.md) — generated `useX({ query: {...} })` hooks require an explicit `queryKey` in the options object or TS fails with TS2741.
+- [ShuttleHub repo history](shuttlehub-repo-history.md) — GitHub repo already had its own commit history and deploy configs; don't force-push over it, rebase local fixes onto origin instead.

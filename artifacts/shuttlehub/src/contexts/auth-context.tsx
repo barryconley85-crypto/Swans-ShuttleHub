@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useGetMe, AuthSession } from '@workspace/api-client-react';
+import { useGetMe, getGetMeQueryKey, AuthSession } from '@workspace/api-client-react';
 
 interface AuthContextType {
   user: AuthSession | null | undefined;
@@ -10,7 +10,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({ user: undefined, isLoading: true, refresh: () => {} });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { data: user, isLoading, isFetching, refetch } = useGetMe({ query: { retry: false } });
+  const { data: user, isLoading, isFetching, refetch } = useGetMe({ query: { queryKey: getGetMeQueryKey(), retry: false } });
 
   return (
     <AuthContext.Provider value={{ user, isLoading: isLoading || isFetching, refresh: () => refetch() }}>
