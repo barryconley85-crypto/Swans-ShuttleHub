@@ -73,7 +73,6 @@ export default function MapComponent({ statuses }: MapComponentProps) {
     });
 
     if (markers.length > 0) {
-      map.addTo(map);
       group.addTo(map);
       map.fitBounds(group.getBounds(), { padding: [50, 50] });
     }
