@@ -258,6 +258,83 @@ router.get("/reports/late-submissions", requireAuth, async (req, res): Promise<v
   })));
 });
 
+router.get("/reports/duty-loadings", requireAuth, async (req, res): Promise<void> => {
+  const date = (req.query.date as string) || new Date().toISOString().slice(0, 10);
+
+  const duties = await db.select().from(dutiesTable).where(eq(dutiesTable.isActive, true));
+
+  const entries = await db
+    .select({
+      id: timetableEntriesTable.id,
+      dutyId: timetableEntriesTable.dutyId,
+      stopId: timetableEntriesTable.stopId,
+      stopName: stopsTable.name,
+      scheduledTime: timetableEntriesTable.scheduledTime,
+      sequenceOrder: timetableEntriesTable.sequenceOrder,
+      runNumber: timetableEntriesTable.runNumber,
+      isBreakAfter: timetableEntriesTable.isBreakAfter,
+    })
+    .from(timetableEntriesTable)
+    .leftJoin(stopsTable, eq(timetableEntriesTable.stopId, stopsTable.id));
+
+  const records = await db
+    .select({
+      id: passengerRecordsTable.id,
+      timetableEntryId: passengerRecordsTable.timetableEntryId,
+      dutyId: passengerRecordsTable.dutyId,
+      driverId: passengerRecordsTable.driverId,
+      driverName: driversTable.name,
+      passengerCount: passengerRecordsTable.passengerCount,
+      isLate: passengerRecordsTable.isLate,
+      minutesLate: passengerRecordsTable.minutesLate,
+    })
+    .from(passengerRecordsTable)
+    .leftJoin(driversTable, eq(passengerRecordsTable.driverId, driversTable.id))
+    .where(eq(passengerRecordsTable.date, date));
+
+  const result = duties.map(duty => {
+    const dutyEntries = entries
+      .filter(e => e.dutyId === duty.id)
+      .sort((a, b) => a.sequenceOrder - b.sequenceOrder);
+
+    const dutyRecords = records.filter(r => r.dutyId === duty.id);
+    const recordByEntryId = new Map(dutyRecords.map(r => [r.timetableEntryId, r]));
+
+    const driverName = dutyRecords[0]?.driverName ?? null;
+    const totalPassengers = dutyRecords.reduce((s, r) => s + r.passengerCount, 0);
+    const completed = dutyRecords.length;
+
+    const stops = dutyEntries.map(e => {
+      const rec = recordByEntryId.get(e.id) ?? null;
+      return {
+        timetableEntryId: e.id,
+        sequenceOrder: e.sequenceOrder,
+        runNumber: e.runNumber,
+        isBreakAfter: e.isBreakAfter,
+        scheduledTime: e.scheduledTime,
+        stopName: e.stopName ?? 'Unknown',
+        passengerCount: rec ? rec.passengerCount : null,
+        isLate: rec?.isLate ?? false,
+        minutesLate: rec?.minutesLate ?? 0,
+        recorded: !!rec,
+      };
+    });
+
+    return {
+      dutyId: duty.id,
+      dutyName: duty.name,
+      dutyNumber: duty.number,
+      driverName,
+      totalPassengers,
+      completed,
+      total: dutyEntries.length,
+      stops,
+    };
+  });
+
+  res.json({ date, duties: result });
+});
+
 router.get("/reports/export", requireAuth, async (req, res): Promise<void> => {
   const dateFrom = (req.query.dateFrom as string) || new Date().toISOString().slice(0, 10);
   const dateTo = (req.query.dateTo as string) || new Date().toISOString().slice(0, 10);
