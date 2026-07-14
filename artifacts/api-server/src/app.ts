@@ -31,8 +31,15 @@ app.use(
   }),
 );
 
+// In production set FRONTEND_URL to the Vercel deployment URL so cookies
+// (sameSite=none, secure) are accepted cross-origin. Falls back to true
+// (allow all) for local development.
+const corsOrigin: string | boolean = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL
+  : true;
+
 app.use(cors({
-  origin: true,
+  origin: corsOrigin,
   credentials: true,
 }));
 

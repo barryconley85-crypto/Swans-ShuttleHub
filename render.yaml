@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: swans-shuttlehub-api
+    runtime: node
+    region: frankfurt  # closest to Cheltenham, UK
+    plan: free
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build
+    startCommand: pnpm --filter @workspace/api-server run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false   # paste your Neon connection string in Render dashboard
+      - key: SESSION_SECRET
+        sync: false   # paste a long random string in Render dashboard
+      - key: FRONTEND_URL
+        sync: false   # paste your Vercel deployment URL e.g. https://swans-shuttlehub.vercel.app
